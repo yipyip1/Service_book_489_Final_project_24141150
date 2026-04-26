@@ -15,6 +15,9 @@ app.use(cors());
 const authRoutes = require('./routes/authRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Basic Route for testing
 app.get('/', (req, res) => {
@@ -26,6 +29,13 @@ app.use('/api/auth', authRoutes); // Auth routes (login, register)
 app.use('/api/users', authRoutes); // Using same router for profile for simplicity
 app.use('/api/services', serviceRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+
+// Make uploads folder static
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database Connection
 const PORT = process.env.PORT || 5000;

@@ -4,7 +4,8 @@ import '../../core/theme/brutalist_theme.dart';
 import '../../core/widgets/brutalist_card.dart';
 import 'services_provider.dart';
 import 'service_details_screen.dart';
-import 'add_service_screen.dart';
+import '../booking/customer_bookings_screen.dart';
+import '../auth/auth_provider.dart';
 
 class BrowseServicesScreen extends StatefulWidget {
   const BrowseServicesScreen({super.key});
@@ -32,7 +33,15 @@ class _BrowseServicesScreenState extends State<BrowseServicesScreen> {
         title: Text('SERVICES', style: Theme.of(context).textTheme.headlineLarge),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, size: 32),
+            icon: const Icon(Icons.history, size: 28),
+            tooltip: 'My Bookings',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerBookingsScreen()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.search, size: 28),
+            tooltip: 'Search',
             onPressed: () {
               final searchCtrl = TextEditingController();
               showDialog(
@@ -70,6 +79,11 @@ class _BrowseServicesScreenState extends State<BrowseServicesScreen> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout, size: 28),
+            tooltip: 'Logout',
+            onPressed: () => context.read<AuthProvider>().logout(),
+          ),
         ],
       ),
       body: provider.isLoading 
@@ -93,34 +107,55 @@ class _BrowseServicesScreenState extends State<BrowseServicesScreen> {
                       );
                     },
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Category Chip Component
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: BrutalistTheme.primary, width: BrutalistTheme.borderWidth),
-                          ),
-                          child: Text(
-                            service['category'] ?? 'GENERAL',
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          service['title'].toString().toUpperCase(),
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '\$${service['price']}',
-                              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 32),
+                        if (service['imageUrl'] != null) ...[
+                          Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: BrutalistTheme.primary, width: BrutalistTheme.borderWidth)),
+                              image: DecorationImage(
+                                image: NetworkImage('http://10.0.2.2:5000${service['imageUrl']}'),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            const Icon(Icons.arrow_forward_ios, size: 32, color: BrutalistTheme.primary),
-                          ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: service['imageUrl'] != null ? 16 : 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: BrutalistTheme.primary, width: BrutalistTheme.borderWidth),
+                                ),
+                                child: Text(
+                                  service['category'] ?? 'GENERAL',
+                                  style: Theme.of(context).textTheme.labelMedium,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                service['title'].toString().toUpperCase(),
+                                style: Theme.of(context).textTheme.headlineLarge,
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '\$${service['price']}',
+                                    style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 32),
+                                  ),
+                                  const Icon(Icons.arrow_forward_ios, size: 32, color: BrutalistTheme.primary),
+                                ],
+                              ),
+                              if (service['imageUrl'] != null) const SizedBox(height: 16),
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -128,14 +163,6 @@ class _BrowseServicesScreenState extends State<BrowseServicesScreen> {
                 },
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: BrutalistTheme.primary,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        child: const Icon(Icons.add, color: BrutalistTheme.surface),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const AddServiceScreen()));
-        },
-      ),
     );
   }
 }

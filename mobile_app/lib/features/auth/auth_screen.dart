@@ -17,6 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _nameCtrl = TextEditingController(); // Only for registration
+  String _selectedRole = 'customer'; // Default role
 
   void _submit() async {
     final provider = context.read<AuthProvider>();
@@ -24,7 +25,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (_isLogin) {
         await provider.login(_emailCtrl.text, _passwordCtrl.text);
       } else {
-        await provider.register(_nameCtrl.text, _emailCtrl.text, _passwordCtrl.text);
+        await provider.register(_nameCtrl.text, _emailCtrl.text, _passwordCtrl.text, _selectedRole);
       }
     } catch (e) {
       if(mounted) {
@@ -62,6 +63,28 @@ class _AuthScreenState extends State<AuthScreen> {
                 BrutalistTextField(
                   label: 'Full Name',
                   controller: _nameCtrl,
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: BrutalistTheme.surface,
+                    border: Border.all(color: BrutalistTheme.outline, width: BrutalistTheme.borderWidth),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedRole,
+                      isExpanded: true,
+                      dropdownColor: BrutalistTheme.surface,
+                      items: const [
+                        DropdownMenuItem(value: 'customer', child: Text('I AM A CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DropdownMenuItem(value: 'provider', child: Text('I AM A SERVICE PROVIDER', style: TextStyle(fontWeight: FontWeight.bold))),
+                      ],
+                      onChanged: (val) {
+                        setState(() => _selectedRole = val!);
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
               ],

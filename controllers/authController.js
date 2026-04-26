@@ -104,8 +104,43 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.fullName = req.body.fullName || user.fullName;
+      user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        user.passwordHash = await bcrypt.hash(req.body.password, salt);
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+        role: updatedUser.role,
+        preferences: updatedUser.preferences
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
 };

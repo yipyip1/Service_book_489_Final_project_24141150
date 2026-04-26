@@ -10,7 +10,24 @@ class BookingProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> createBooking(String serviceId, DateTime startTime, double totalAmount) async {
+  Future<Map<String, dynamic>> createPaymentIntent(double totalAmount) async {
+    final token = await _storage.read(key: 'jwt');
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:5000/api/payments/intent'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'amount': totalAmount}),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to create payment intent');
+    }
+  }
+
+  Future<void> createBooking(String serviceId, DateTime startTime, double totalAmount, String stripePaymentIntentId) async {
     _isLoading = true;
     notifyListeners();
 
@@ -18,7 +35,6 @@ class BookingProvider with ChangeNotifier {
       final token = await _storage.read(key: 'jwt');
       if (token == null) throw Exception('Not authenticated');
 
-      // Default duration is 1 hr if not specified precisely in this MVP test
       final endTime = startTime.add(const Duration(hours: 1));
 
       final response = await http.post(
@@ -33,6 +49,8 @@ class BookingProvider with ChangeNotifier {
           'endTime': endTime.toIso8601String(),
           'totalAmount': totalAmount,
           'notes': 'Booked via Flutter Mobile App',
+          'stripePaymentIntentId': stripePaymentIntentId,
+          'paymentStatus': 'paid'
         }),
       );
 

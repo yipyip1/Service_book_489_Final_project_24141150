@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'provider', 'admin'], 
     default: 'customer' 
   },
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
   preferences: {
     notifications: { type: Boolean, default: true }
   }

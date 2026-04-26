@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import '../../core/theme/brutalist_theme.dart';
 import '../../core/widgets/brutalist_button.dart';
 import '../../core/widgets/brutalist_card.dart';
+import '../../core/services/notification_service.dart';
 import 'booking_provider.dart';
 
 class ConfirmBookingScreen extends StatefulWidget {
@@ -53,12 +55,44 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
     }
 
     final provider = context.read<BookingProvider>();
+    final amount = (widget.service['price'] as num).toDouble();
+    
     try {
+      // 1. Create Payment Intent
+      final intentData = await provider.createPaymentIntent(amount);
+      final clientSecret = intentData['paymentIntent'];
+      final paymentIntentId = intentData['id'];
+
+      // 2. Initialize Payment Sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'Stitch Professional Service',
+          style: ThemeMode.dark, // Brutalist style
+        ),
+      );
+
+      // 3. Present Payment Sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      // 4. If success, Create Booking
       await provider.createBooking(
         widget.service['_id'], 
         _selectedDate!, 
-        (widget.service['price'] as num).toDouble(),
+        amount,
+        paymentIntentId
       );
+
+      // 5. Schedule Local Notification 2 hours before
+      final reminderTime = _selectedDate!.subtract(const Duration(hours: 2));
+      if (reminderTime.isAfter(DateTime.now())) {
+        await NotificationService().scheduleNotification(
+          id: widget.service['_id'].hashCode,
+          title: 'Upcoming Appointment',
+          body: 'Reminder: Your ${widget.service['title']} service begins in 2 hours!',
+          scheduledTime: reminderTime,
+        );
+      }
       
       if(mounted) {
         showDialog(
@@ -66,7 +100,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           barrierDismissible: false,
           builder: (_) => AlertDialog(
             title: const Text('SUCCESS'),
-            content: const Text('YOUR BOOKING IS CONFIRMED.'),
+            content: const Text('PAYMENT COMPLETED & BOOKING CONFIRMED.'),
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero, side: BorderSide(color: BrutalistTheme.primary, width: 2)),
             actions: [
               BrutalistButton(
@@ -79,10 +113,10 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           )
         );
       }
+    } on StripeException catch (e) {
+      if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment Cancelled: ${e.error.localizedMessage}')));
     } catch (e) {
-      if(mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 

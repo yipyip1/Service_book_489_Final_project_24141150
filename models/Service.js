@@ -31,6 +31,14 @@ const serviceSchema = new mongoose.Schema({
     average: { type: Number, default: 0 },
     count: { type: Number, default: 0 }
   },
+  imageUrl: {
+    type: String,
+    required: true
+  },
+  contactNumber: {
+    type: String,
+    required: true
+  },
   isActive: { 
     type: Boolean, 
     default: true 

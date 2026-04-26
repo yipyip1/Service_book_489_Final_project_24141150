@@ -22,10 +22,21 @@ class ServiceDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              color: BrutalistTheme.primary,
+              height: 300,
+              decoration: service['imageUrl'] != null 
+                  ? BoxDecoration(
+                      border: const Border(bottom: BorderSide(color: BrutalistTheme.primary, width: 2)),
+                      image: DecorationImage(
+                        image: NetworkImage('http://10.0.2.2:5000${service['imageUrl']}'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.3), BlendMode.darken),
+                      ),
+                    )
+                  : const BoxDecoration(color: BrutalistTheme.primary),
               padding: const EdgeInsets.all(32.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                    Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -43,6 +54,7 @@ class ServiceDetailsScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         color: BrutalistTheme.surface,
                         fontSize: 40,
+                        shadows: const [Shadow(offset: Offset(2, 2), color: BrutalistTheme.primary)],
                       ),
                     ),
                 ],
@@ -56,6 +68,11 @@ class ServiceDetailsScreen extends StatelessWidget {
                   Text(
                     'PROVIDER: ${service['providerId']?['fullName'] ?? 'UNKNOWN'}'.toUpperCase(),
                     style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'CONTACT: ${service['contactNumber'] ?? 'NOT PROVIDED'}',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: BrutalistTheme.primary),
                   ),
                   const SizedBox(height: 24),
                   Text(
