@@ -1,0 +1,65 @@
+============================================================
+           AI USAGE DECLARATION
+============================================================
+
+Name:Radito Dhali
+Student ID: 24141150
+Assignment: Lab Final Project 
+Date: 26/4/2026
+
+------------------------------------------------------------
+1. AI TOOLS USED (check all that apply)
+------------------------------------------------------------
+[ ] None
+[ ] ChatGPT
+[ ] GitHub Copilot
+[Y] Google Gemini
+[Y] Claude
+[ ] Cursor
+[ ] Other: ________________
+
+------------------------------------------------------------
+2. PURPOSE OF AI USE (check all that apply)
+------------------------------------------------------------
+[Y] Learning/understanding concepts
+[Y] Debugging my code
+[Y] Generating code snippets
+[ ] Writing text content
+[Y] Design/styling ideas
+[ ] Image generation
+[ ] Other: ________________
+
+------------------------------------------------------------
+3. DESCRIPTION OF AI USE
+------------------------------------------------------------
+Briefly describe what you used AI for and how:
+I have never Implemented Stripe so I have used to implement it.
+Also the backend is custom made so AI is been used to get help
+building the backend. Also the design of the app is made using 
+AI. Integrating the backend and frontend, connecting them AI has been
+used
+
+------------------------------------------------------------
+4. AI-ASSISTED SECTIONS
+------------------------------------------------------------
+List specific files/sections where AI helped significantly:
+
+File: paymentController.js Section: _________________
+File: notification.js Section: _________________
+File: admin_dashboard_screen.dart Section: _________________
+
+------------------------------------------------------------
+5. DECLARATION
+------------------------------------------------------------
+I declare that:
+- This disclosure is complete and accurate
+- I understand all code in my submission
+- I can explain and modify my work if asked
+- I take full responsibility for my submission
+
+Signature: Radito Dhali
+Date: 25/4/2026
+
+============================================================
+Save as: docs/AI_Declaration.txt
+============================================================
